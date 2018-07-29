@@ -1,3 +1,6 @@
+# Account config
+account.conf
+
 # Logs
 logs
 *.log
