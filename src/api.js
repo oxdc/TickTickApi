@@ -1,6 +1,12 @@
 import request from 'request'
-import TickProject from './modules/tickProject'
-import TickProjectGroup from './modules/tickProjectGroup'
+import {
+  TickProject,
+  Inbox
+} from './modules/tickProject'
+import {
+  TickProjectGroup,
+  TickNoGroup
+} from './modules/tickProjectGroup'
 import TickTag from './modules/tickTag'
 import TickTask from './modules/tickTask';
 
@@ -116,11 +122,14 @@ export default class TickApi {
             _this.user.projectGroups.push(new TickProjectGroup(group.name, group))
           }
         }
+        _this.user.projectGroups.push(new TickNoGroup())
         if (data.projectProfiles) {
           for (var project of data.projectProfiles) {
             _this.user.projects.push(new TickProject(project.name, project))
           }
         }
+        var inbox = new Inbox(_this.user.inbox)
+        _this.user.projects.push(inbox)
         if (data.tags) {
           for (var tag of data.tags) {
             _this.user.tags.push(new TickTag(tag.name, tag))
@@ -130,6 +139,16 @@ export default class TickApi {
           for (var task of data.syncTaskBean.update) {
             _this.user.allTasks.push(new TickTask(task))
           }
+        }
+        for (var group of _this.user.projectGroups) {
+          if (group.id) {
+            group.projects = _this.user.projects.filter(project => project.property.groupId === group.id)
+          } else {
+            group.projects = _this.user.projects.filter(project => project.property.groupId === null)
+          }
+        }
+        for (var project of _this.user.projects) {
+          project.tasks = _this.user.allTasks.filter(task => task.projectId === project.id)
         }
         resolve(_this)
       })

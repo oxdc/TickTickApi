@@ -7,7 +7,7 @@ async function example() {
   })
   await api.update()
   await api.getUserProfile()
-  console.log(api.user)
+  console.log(api.user.projectGroups[1].projects[1])
 }
 
 example()
