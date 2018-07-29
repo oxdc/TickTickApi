@@ -1,4 +1,8 @@
 import request from 'request'
+import TickProject from './modules/tickProject'
+import TickProjectGroup from './modules/tickProjectGroup'
+import TickTag from './modules/tickTag'
+import TickTask from './modules/tickTask';
 
 export default class TickApi {
   constructor (username, password, options) {
@@ -27,9 +31,10 @@ export default class TickApi {
     this.user = {
       id: null,
       inbox: null,
-      projects: null,
-      projectGroups: null,
-      tags: null,
+      projects: [],
+      projectGroups: [],
+      tags: [],
+      allTasks: [],
       pro: {
         status: false,
         endDate: null
@@ -51,16 +56,16 @@ export default class TickApi {
         password: password
       }
     }
-    const _this = this
+    var _this = this
     return new Promise((resolve, reject) => {
       this.request(reqOptions, function (error, request, body) {
         if (body.username !== undefined) {
-          resolve(body)
           if (body.token) _this.token = body.token
           if (body.userId) _this.user.id = body.userId
           if (body.inboxId) _this.user.inbox = body.inboxId
           if (body.pro) _this.user.pro.status = body.pro
           if (body.proEndDate) _this.user.pro.endDate = new Date(body.proEndDate)
+          resolve(_this)
         } else {
           throw new Error('Could not login')
         }
@@ -78,16 +83,16 @@ export default class TickApi {
         'Origin': this.baseUrl
       }
     }
-    const _this = this
+    var _this = this
     return new Promise((resolve, reject) => {
       this.request(reqOptions, function (error, request, body) {
         if (error) reject(error)
         var data = JSON.parse(body)
-        resolve(data)
         if (data.userId) _this.user.id = data.userId
         if (data.inboxId) _this.user.inbox = data.inboxId
         if (data.pro) _this.user.pro.status = data.pro
         if (data.proEndDate) _this.user.pro.endDate = new Date(data.proEndDate)
+        resolve(_this)
       })
     })
   }
@@ -102,10 +107,31 @@ export default class TickApi {
         'Origin': this.baseUrl
       }
     }
-    const _this = this
+    var _this = this
     return new Promise((resolve, reject) => {
       this.request(reqOptions, function (error, request, body) {
         var data = JSON.parse(body)
+        if (data.projectGroups) {
+          for (var group of data.projectGroups) {
+            _this.user.projectGroups.push(new TickProjectGroup(group.name, group))
+          }
+        }
+        if (data.projectProfiles) {
+          for (var project of data.projectProfiles) {
+            _this.user.projects.push(new TickProject(project.name, project))
+          }
+        }
+        if (data.tags) {
+          for (var tag of data.tags) {
+            _this.user.tags.push(new TickTag(tag.name, tag))
+          }
+        }
+        if (data.syncTaskBean.update) {
+          for (var task of data.syncTaskBean.update) {
+            _this.user.allTasks.push(new TickTask(task))
+          }
+        }
+        resolve(_this)
       })
     })
   }
