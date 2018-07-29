@@ -1,0 +1,32 @@
+{
+  "name": "ticktickapi",
+  "version": "0.1.0",
+  "description": "Wed API for TickTick / Dida365",
+  "main": "index.js",
+  "scripts": {
+    "start": "node -r esm main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oxdc/TickTickApi.git"
+  },
+  "keywords": [
+    "ticktick",
+    "dida",
+    "dida365",
+    "todo",
+    "api"
+  ],
+  "author": "oxdc",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/oxdc/TickTickApi/issues"
+  },
+  "homepage": "https://github.com/oxdc/TickTickApi#readme",
+  "dependencies": {
+    "babel-eslint": "^8.2.6",
+    "eslint": "^5.2.0",
+    "esm": "^3.0.72",
+    "request": "^2.87.0"
+  }
+}
